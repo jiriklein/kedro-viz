@@ -69,6 +69,7 @@ _JSON_NODES = {}  # type: Dict[str, Dict[str, Union[Node, AbstractDataSet, None]
 app = Flask(  # pylint: disable=invalid-name
     __name__, static_folder=str(Path(__file__).parent.absolute() / "html" / "static")
 )
+app.config["DEBUG"] = True
 socket_io = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
 
 
@@ -695,6 +696,7 @@ def _call_viz(
         if browser and is_localhost:
             webbrowser.open_new("http://{}:{:d}/".format(host, port))
         socket_io.run(app=app, host=host, port=port)
+        # app.run(host=host, port=port)
 
 
 # Launch a develop viz server manually by supplying this server script with a project_path.
