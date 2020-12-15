@@ -45,6 +45,7 @@ import click
 import kedro
 import requests
 from flask import Flask, abort, jsonify, send_from_directory
+from flask_socketio import SocketIO
 from IPython.core.display import HTML, display
 from kedro.framework.cli.utils import KedroCliError
 from kedro.framework.context import KedroContextError, load_context
@@ -68,6 +69,8 @@ _JSON_NODES = {}  # type: Dict[str, Dict[str, Union[Node, AbstractDataSet, None]
 app = Flask(  # pylint: disable=invalid-name
     __name__, static_folder=str(Path(__file__).parent.absolute() / "html" / "static")
 )
+socket_io = SocketIO(app, async_mode=None, logger=True, engineio_logger=True)
+
 
 ERROR_PROJECT_ROOT = (
     "Could not find a Kedro project root. You can run `kedro viz` by either providing "
@@ -691,7 +694,7 @@ def _call_viz(
         is_localhost = host in ("127.0.0.1", "localhost", "0.0.0.0")
         if browser and is_localhost:
             webbrowser.open_new("http://{}:{:d}/".format(host, port))
-        app.run(host=host, port=port)
+        socket_io.run(app=app, host=host, port=port)
 
 
 # Launch a develop viz server manually by supplying this server script with a project_path.
